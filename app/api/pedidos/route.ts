@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { calcularPrecioUnitario } from "@/lib/precios";
 import { calcularCostoEnvio, ZonaEnvio } from "@/lib/envio";
+import { enviarNotificacionTelegram } from "@/lib/telegram";
+import { enviarEmailConfirmacion, enviarEmailNotificacionAdmin } from "@/lib/email";
 
 interface ItemRecibido {
   producto_id: string;
@@ -48,8 +50,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Traemos los productos reales + escalones de precio desde la base.
-    // NUNCA se usa el precio que venga del navegador.
     const productoIds = items.map((i) => i.producto_id);
     const { data: productos, error: errProductos } = await supabaseAdmin
       .from("productos")
@@ -114,8 +114,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Calculamos el envío en el servidor, en base a los gramos reales
-    // de flor de cada producto (nunca confiando en un costo que mande el cliente)
     const itemsParaEnvio = items.map((item) => {
       const producto = productos.find((p) => p.id === item.producto_id)!;
       const gramosPorUnidad =
@@ -132,7 +130,6 @@ export async function POST(req: NextRequest) {
     const envioCosto = calcularCostoEnvio(itemsParaEnvio, zonaEnvio);
     const totalPedido = total + envioCosto;
 
-    // Crear el pedido
     const { data: pedido, error: errPedido } = await supabaseAdmin
       .from("pedidos")
       .insert({
@@ -157,7 +154,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Guardar los items del pedido
     const { error: errItems } = await supabaseAdmin.from("pedido_items").insert(
       itemsParaInsertar.map((i) => ({ ...i, pedido_id: pedido.id }))
     );
@@ -170,8 +166,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Descontar stock (best-effort; para alto volumen conviene mover esto
-    // a una función RPC en Postgres para que sea atómico)
     for (const item of items) {
       const producto = productos.find((p) => p.id === item.producto_id)!;
       await supabaseAdmin
@@ -179,6 +173,45 @@ export async function POST(req: NextRequest) {
         .update({ stock: producto.stock - item.cantidad })
         .eq("id", producto.id);
     }
+
+    await Promise.allSettled([
+      enviarNotificacionTelegram({
+        pedidoId: pedido.id,
+        nombreCliente: cliente.nombre.trim(),
+        telefono: cliente.telefono.trim(),
+        email: cliente.email?.trim() || null,
+        direccion: cliente.direccion?.trim() || null,
+        zonaEnvio,
+        items: itemsParaInsertar,
+        subtotalProductos: total,
+        envioCosto,
+        total: totalPedido,
+      }),
+      enviarEmailNotificacionAdmin({
+        pedidoId: pedido.id,
+        nombreCliente: cliente.nombre.trim(),
+        telefono: cliente.telefono.trim(),
+        email: cliente.email?.trim() || null,
+        direccion: cliente.direccion?.trim() || null,
+        zonaEnvio,
+        items: itemsParaInsertar,
+        subtotalProductos: total,
+        envioCosto,
+        total: totalPedido,
+      }),
+      cliente.email?.trim()
+        ? enviarEmailConfirmacion({
+            email: cliente.email.trim(),
+            nombreCliente: cliente.nombre.trim(),
+            pedidoId: pedido.id,
+            items: itemsParaInsertar,
+            subtotalProductos: total,
+            envioCosto,
+            total: totalPedido,
+            zonaEnvio,
+          })
+        : Promise.resolve(),
+    ]);
 
     return NextResponse.json({ pedido_id: pedido.id, total: totalPedido });
   } catch (err) {
