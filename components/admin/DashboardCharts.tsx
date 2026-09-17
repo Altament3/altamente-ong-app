@@ -36,7 +36,7 @@ export default function DashboardCharts({
               <XAxis dataKey="fecha" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} />
               <Tooltip
-                formatter={(value: number) => `$${value.toLocaleString("es-AR")}`}
+                formatter={(value: any) => `$${Number(value ?? 0).toLocaleString("es-AR")}`}
               />
               <Line
                 type="monotone"
@@ -87,7 +87,7 @@ export default function DashboardCharts({
               <XAxis dataKey="dia" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} />
               <Tooltip
-                formatter={(value: number) => `$${value.toLocaleString("es-AR")}`}
+                formatter={(value: any) => `$${Number(value ?? 0).toLocaleString("es-AR")}`}
               />
               <Bar dataKey="total" fill="#059669" radius={[4, 4, 0, 0]} />
             </BarChart>
