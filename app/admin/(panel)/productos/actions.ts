@@ -76,3 +76,42 @@ export async function eliminarProducto(id: string) {
   revalidatePath("/admin/productos");
   revalidatePath("/catalogo");
 }
+
+export async function subirImagenProducto(id: string, formData: FormData) {
+  const supabase = await createSupabaseServerClient();
+
+  const archivo = formData.get("imagen") as File;
+
+  if (!archivo || archivo.size === 0) {
+    throw new Error("No se seleccionó ninguna imagen");
+  }
+
+  const extension = archivo.name.split(".").pop();
+  const nombreArchivo = `${id}-${Date.now()}.${extension}`;
+
+  const { error: errorSubida } = await supabase.storage
+    .from("productos")
+    .upload(nombreArchivo, archivo, { upsert: true });
+
+  if (errorSubida) {
+    throw new Error(errorSubida.message);
+  }
+
+  const { data: urlData } = supabase.storage
+    .from("productos")
+    .getPublicUrl(nombreArchivo);
+
+  const { error: errorUpdate } = await supabase
+    .from("productos")
+    .update({ imagen_url: urlData.publicUrl })
+    .eq("id", id);
+
+  if (errorUpdate) {
+    throw new Error(errorUpdate.message);
+  }
+
+  revalidatePath("/admin/productos");
+  revalidatePath(`/admin/productos/${id}`);
+  revalidatePath("/catalogo");
+  redirect(`/admin/productos/${id}`);
+}

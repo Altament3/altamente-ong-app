@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { actualizarProducto } from "../actions";
+import { actualizarProducto, subirImagenProducto } from "../actions";
 
 export default async function EditarProductoPage({
   params,
@@ -20,12 +21,49 @@ export default async function EditarProductoPage({
   }
 
   const actualizarConId = actualizarProducto.bind(null, id);
+  const subirImagenConId = subirImagenProducto.bind(null, id);
 
   return (
     <div className="max-w-lg">
       <h1 className="text-2xl font-bold text-neutral-900 mb-6">
         Editar producto
       </h1>
+
+      <div className="mb-8 border border-neutral-200 rounded-xl p-4">
+        <p className="text-sm text-neutral-600 mb-3">Foto del producto</p>
+
+        {producto.imagen_url ? (
+          <div className="relative w-40 h-40 rounded-lg overflow-hidden bg-neutral-100 mb-4">
+            <Image
+              src={producto.imagen_url}
+              alt={producto.nombre}
+              fill
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <div className="w-40 h-40 rounded-lg bg-neutral-100 flex items-center justify-center text-neutral-400 text-sm mb-4">
+            Sin foto
+          </div>
+        )}
+
+        <form action={subirImagenConId} className="space-y-3">
+          <input
+            type="file"
+            name="imagen"
+            accept="image/*"
+            required
+            className="w-full text-sm"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 rounded-lg bg-neutral-800 text-white text-sm font-medium hover:bg-neutral-900"
+          >
+            Subir foto
+          </button>
+        </form>
+      </div>
+
       <form action={actualizarConId} className="space-y-4">
         <div>
           <label className="text-sm text-neutral-600">Nombre *</label>
