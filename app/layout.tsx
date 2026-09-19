@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { CartProvider } from "@/lib/cart-context";
 import HeaderCarrito from "@/components/HeaderCarrito";
+import AvisosBanner from "@/components/AvisosBanner";
 
 export const metadata: Metadata = {
   title: "Catálogo",
@@ -28,6 +29,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
+        <AvisosBanner />
         <CartProvider>
           <HeaderCarrito />
           {children}
