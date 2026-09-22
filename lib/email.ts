@@ -87,7 +87,7 @@ export async function enviarEmailConfirmacion(datos: DatosEmailCliente) {
 
   try {
     const { error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "onboarding@resend.dev",
+      from: `Altamente <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`,
       to: datos.email,
       subject: `Pedido confirmado #${datos.pedidoId.slice(0, 8)}`,
       html,
@@ -168,7 +168,7 @@ export async function enviarEmailNotificacionAdmin(datos: DatosEmailAdmin) {
 
   try {
     const { error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "onboarding@resend.dev",
+      from: `Altamente <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`,
       to: adminEmail,
       subject: `🛒 Nuevo pedido #${datos.pedidoId.slice(0, 8)} — ${datos.nombreCliente}`,
       html,

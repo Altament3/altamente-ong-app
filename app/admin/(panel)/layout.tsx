@@ -13,7 +13,7 @@ export default async function AdminPanelLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user || user.app_metadata?.role !== "admin") {
     redirect("/admin/login");
   }
 
@@ -39,6 +39,9 @@ export default async function AdminPanelLayout({
             </Link>
             <Link href="/admin/avisos" className="hover:text-emerald-600">
               Avisos
+            </Link>
+            <Link href="/admin/socios" className="hover:text-emerald-600">
+              Socios
             </Link>
             <Link href="/catalogo" className="text-neutral-400 hover:text-neutral-600">
               Ver catálogo público →
