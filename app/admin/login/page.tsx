@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useState, FormEvent, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/catalogo";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -28,15 +32,21 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/admin/productos");
+    router.push(next);
     router.refresh();
   }
 
   return (
-    <main className="max-w-sm mx-auto px-4 py-24">
-      <h1 className="text-2xl font-bold text-neutral-900 mb-6">
-        Panel de administración
-      </h1>
+    <main className="max-w-sm mx-auto px-4 py-16">
+            <div className="flex justify-center mb-8">
+        <img
+          src="/icon-512.png"
+          alt="Altamente"
+          width={96}
+          height={96}
+          className="rounded-2xl"
+        />
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="text-sm text-neutral-600">Email</label>
@@ -67,6 +77,17 @@ export default function LoginPage() {
           {cargando ? "Ingresando..." : "Ingresar"}
         </button>
       </form>
+      <p className="text-xs text-neutral-400 mt-6 text-center">
+        ¿Todavía no sos socio/a? Contactanos para sumarte.
+      </p>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

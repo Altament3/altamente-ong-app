@@ -36,11 +36,16 @@ function LoginForm() {
   }
 
   return (
-    <main className="max-w-sm mx-auto px-4 py-24">
-      <h1 className="text-2xl font-bold text-neutral-900 mb-2">Altamente</h1>
-      <p className="text-neutral-500 mb-6">
-        Ingresá con tu cuenta de socio/a.
-      </p>
+    <main className="max-w-sm mx-auto px-4 py-16">
+      <div className="flex justify-center mb-8">
+        <img
+          src="/icon-512.png"
+          alt="Altamente"
+          width={96}
+          height={96}
+          className="rounded-2xl"
+        />
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="text-sm text-neutral-600">Email</label>
@@ -71,7 +76,7 @@ function LoginForm() {
           {cargando ? "Ingresando..." : "Ingresar"}
         </button>
       </form>
-      <p className="text-xs text-neutral-400 mt-6">
+      <p className="text-xs text-neutral-400 mt-6 text-center">
         ¿Todavía no sos socio/a? Contactanos para sumarte.
       </p>
     </main>

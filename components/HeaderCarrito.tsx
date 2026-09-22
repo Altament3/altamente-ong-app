@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 
 export default function HeaderCarrito() {
   const { totalItems } = useCart();
+  const pathname = usePathname();
+
+  if (pathname === "/login" || pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <header className="border-b border-neutral-100 sticky top-0 bg-white/80 backdrop-blur z-10">

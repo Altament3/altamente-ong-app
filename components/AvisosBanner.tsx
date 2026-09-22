@@ -19,7 +19,7 @@ export default function AvisosBanner() {
   const [avisos, setAvisos] = useState<Aviso[]>([]);
 
   useEffect(() => {
-    if (pathname?.startsWith("/admin")) return;
+    if (pathname?.startsWith("/admin") || pathname === "/login") return;
 
     async function cargar() {
       const ahora = new Date().toISOString();
@@ -44,8 +44,7 @@ export default function AvisosBanner() {
     cargar();
   }, [pathname]);
 
-  if (pathname?.startsWith("/admin") || avisos.length === 0) return null;
-
+  if (pathname?.startsWith("/admin") || pathname === "/login" || avisos.length === 0) return null;
   return (
     <div>
       {avisos.map((a) => (
