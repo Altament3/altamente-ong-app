@@ -116,7 +116,7 @@ export default function Home() {
         }}
       >
         <Image
-          src="/altamente-inicio-mobile.webp"
+                      src="/altamente-inicio-movil-v2.webp"
           alt="Altamente: comunidad, ciencia y naturaleza"
           fill
           priority
