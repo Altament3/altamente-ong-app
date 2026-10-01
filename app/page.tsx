@@ -20,7 +20,7 @@ const ENTRAR_HREF = "/catalogo";
 // Proporciones de las imágenes (ancho / alto) para que los textos y el botón
 // queden siempre en el mismo lugar respecto del dibujo.
 const DESKTOP_RATIO = 1717 / 916;
-const MOBILE_RATIO = 677 / 796;
+const MOBILE_RATIO = 720 / 1560;
 
 type Medidas = {
   lemaTop: string;
@@ -41,11 +41,11 @@ const ESCRITORIO: Medidas = {
 };
 
 const CELULAR: Medidas = {
-  lemaTop: "58.5%",
-  lemaSize: "clamp(17px, 4.8cqw, 30px)",
-  botonTop: "68.5%",
-  descTop: "79%",
-  descSize: "clamp(12px, 3.4cqw, 20px)",
+  lemaTop: "45.5%",
+  lemaSize: "clamp(18px, 5.2cqw, 32px)",
+  botonTop: "55.5%",
+  descTop: "63%",
+  descSize: "clamp(13px, 3.6cqw, 20px)",
   descMaxWidth: "84cqw",
 };
 
@@ -72,7 +72,7 @@ function Contenido({ m }: { m: Medidas }) {
       </Link>
 
       <p
-        style={{ top: m.descTop, fontSize: m.descSize, maxWidth: m.descMaxWidth }}
+        style={{ top: m.descTop, fontSize: m.descSize, width: m.descMaxWidth }}
         className={`${poppins.className} absolute left-1/2 -translate-x-1/2 text-center leading-relaxed text-[#2E3A26]`}
       >
         {DESCRIPCION}
@@ -105,12 +105,13 @@ export default function Home() {
         <Contenido m={ESCRITORIO} />
       </div>
 
-      {/* Pantallas verticales (celular, tablet parada) */}
+      {/* Pantallas verticales (celular, tablet parada):
+          también cubre toda la pantalla */}
       <div
         className="relative block shrink-0 landscape:hidden"
         style={{
           containerType: "inline-size",
-          width: `min(100vw, calc(100dvh * ${MOBILE_RATIO}))`,
+          width: `max(100vw, calc(100dvh * ${MOBILE_RATIO}))`,
           aspectRatio: `${MOBILE_RATIO}`,
         }}
       >
