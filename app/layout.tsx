@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { CartProvider } from "@/lib/cart-context";
 import HeaderCarrito from "@/components/HeaderCarrito";
 import AvisosBanner from "@/components/AvisosBanner";
+import OcultarEnInicio from "@/components/OcultarEnInicio";
 
 export const metadata: Metadata = {
   title: "Catálogo",
@@ -27,11 +28,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body>
         <AvisosBanner />
         <CartProvider>
-          <HeaderCarrito />
+          <OcultarEnInicio>
+            <HeaderCarrito />
+          </OcultarEnInicio>
           {children}
         </CartProvider>
       </body>

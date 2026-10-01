@@ -33,7 +33,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Estas rutas nunca pasan por este control (o ya tienen el suyo propio)
-  const esPublica =
+    const esPublica =
+    pathname === "/" ||
     pathname === "/login" ||
     pathname.startsWith("/admin") || // /admin ya tiene su propio control de acceso
     pathname === "/manifest.json" ||
@@ -61,5 +62,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico)$).*)",
+  ],
 };
